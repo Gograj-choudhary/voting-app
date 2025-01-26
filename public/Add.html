@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Candidates</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+        .add {
+            padding: 50px 20px;
+            background-color: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .add h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .add .form-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 70%;
+        }
+        .add label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            float: left;
+        }
+        .add input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            color: #e0e0e0;
+        }
+        .add input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+        }
+        .add button {
+            background-color: #007bff;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .add button:hover {
+            background-color: #bb86fc;
+        }
+        .list {
+            background-color: #444;
+            color: white;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .list h2 {
+            align-items: center;
+            font-size: 30px;
+        }
+        .list table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .list th, .list td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .list button {
+            background-color: #007bff;
+            padding: 10px 60px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .list button:hover {
+            background-color: #bb86fc;
+        }
+    </style>
+</head>
+<body>
+    <section class="add" id="add">
+        <h1>Add Candidate Details</h1>
+        <form class="form-items" id="form-items">
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Enter Candidate Name">
+            </div>
+            <div>
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" required placeholder="Enter Candidate Age">
+            </div>
+            <div>
+                <label for="party">Party</label>
+                <input type="text" id="party" name="party" placeholder="Enter Candidate Party Name">
+            </div>
+            <div>
+                <label for="aadharCardNumber">Aadhar Card Number</label>
+                <input type="number" id="aadharCardNumber" name="aadharCardNumber" required placeholder="Enter Candidate Aadhar Number">
+            </div>
+            <button type="submit">Add</button>
+        </form>
+    </section>
+
+    <section class="list" id="list">
+        <h2>List of Added Candidates</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Party</th>
+                    <th>Aadhar Card Number</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="candidate-list"></tbody>
+        </table>
+        <button id="submit-all" type="button">Submit All</button>
+    </section>
+
+    <script>
+        const form = document.getElementById('form-items');
+        const candidateList = document.getElementById('candidate-list');
+        const submitAllButton = document.getElementById('submit-all');
+        const candidates = []; // Temporary array to store candidates
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const age = parseInt(document.getElementById('age').value, 10);
+            const party = document.getElementById('party').value;
+            const aadharCardNumber = document.getElementById('aadharCardNumber').value;
+
+            const candidate = { name, age, party, aadharCardNumber };
+            candidates.push(candidate);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${name}</td>
+                <td>${age}</td>
+                <td>${party}</td>
+                <td>${aadharCardNumber}</td>
+                <td><button onclick="deleteCandidate(this, '${name}')">Delete</button></td>
+            `;
+            candidateList.appendChild(row);
+
+            form.reset();
+        });
+
+        function deleteCandidate(button, name) {
+            const row = button.parentElement.parentElement;
+            candidateList.removeChild(row);
+
+            const index = candidates.findIndex(candidate => candidate.name === name);
+            if (index > -1) candidates.splice(index, 1);
+        }
+
+        submitAllButton.addEventListener('click', async () => {
+            if (candidates.length === 0) {
+                alert('No candidates to submit.');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token'); // Assumes token is stored in localStorage
+                const response = await fetch('http://localhost:3000/condidate/room/candidate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(candidates)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to submit candidates.');
+                }
+
+                alert('Candidates submitted successfully!');
+                candidateList.innerHTML = '';
+                candidates.length = 0; // Clear the array
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+</html>

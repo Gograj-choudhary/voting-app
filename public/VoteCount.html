@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Count</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .votes {
+            background-color: #231d1d;
+            color: white;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .votes h1 {
+            font-size: 30px;
+            text-align: center;
+        }
+        .votes table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .votes th, .votes td {
+            padding: 8px;
+            border: 2px solid #f3f2f2;
+            text-align: center;
+        }
+        .votes button {
+            background-color: #007bff;
+            padding: 8px 40px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .votes button:hover {
+            background-color: #bb86fc;
+        }
+        .votes h2 {
+            font-size: 18px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .votes p {
+            font-size: 16px;
+            text-align: center;
+        }
+    
+        
+        @media (max-width: 768px) {
+            .votes h1 {
+                font-size: 26px;
+            }
+            .votes table {
+                font-size: 16px;
+            }
+            .votes th, .votes td {
+                padding: 6px;
+            }
+            .votes button {
+                padding: 8px 30px;
+                font-size: 13px;
+            }
+        }
+    
+        @media (max-width: 480px) {
+            .votes h1 {
+                font-size: 22px;
+            }
+            .votes table {
+                font-size: 14px;
+            }
+            .votes th, .votes td {
+                padding: 5px;
+            }
+            .votes button {
+                padding: 6px 20px;
+                font-size: 12px;
+            }
+            .votes h2 {
+                font-size: 16px;
+            }
+            .votes p {
+                font-size: 14px;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <section class="votes" id="votes">
+        <h1>Candidates Voting Result</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Seq.</th>
+                    <th>Candidate Name</th>
+                    <th>Party</th>
+                    <th>No. of Votes</th>
+                </tr>
+            </thead>
+            <tbody id="candidate-data">
+                <!-- Candidate data will be dynamically inserted here -->
+            </tbody>
+        </table>
+        <button id="release-results">Release Voting Results</button>
+        <div>
+            <h2>NOTE</h2>
+            <p>(1) is Winner, (2) is 1st Runner-Up, and (3) is 2nd Runner-Up</p>
+        </div>
+    </section>
+
+    <script>
+        const candidateTableBody = document.getElementById('candidate-data');
+        const releaseResultsButton = document.getElementById('release-results');
+    
+        // Fetch vote counts
+        async function fetchVoteCounts() {
+            try {
+                const response = await fetch('http://localhost:3000/condidate/room/votes', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include JWT token
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vote counts');
+                }
+    
+                const candidates = await response.json();
+                candidateTableBody.innerHTML = '';
+    
+                // Populate the table with sorted candidates
+                candidates.forEach((candidate, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${candidate.name}</td>
+                        <td>${candidate.party}</td>
+                        <td>${candidate.voteCount}</td> <!-- Default to 0 if undefined -->
+                    `;
+                    candidateTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching vote counts:', error.message);
+            }
+        }
+    
+        // Release voting results
+        releaseResultsButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/condidate/room/release-results', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include JWT token
+                    },
+                });
+    
+                const result = await response.json();
+    
+                if (response.ok) {
+                    alert(result.message || 'Voting results released successfully!');
+                } else {
+                    alert(result.error || 'Failed to release voting results.');
+                }
+            } catch (error) {
+                console.error('Error releasing voting results:', error.message);
+            }
+        });
+    
+        // Fetch vote counts on page load
+        window.onload = fetchVoteCounts;
+    </script>
+    
+</body>
+</html>

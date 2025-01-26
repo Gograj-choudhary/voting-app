@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Interface</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 32px;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .candidate-card {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            display: flex;
+            padding: 15px;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .candidate-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #007bff;
+        }
+
+        .candidate-details {
+            flex: 1;
+        }
+
+        .candidate-details h2 {
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+
+        .candidate-details p {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #aaa;
+        }
+
+        .candidate-buttons {
+            margin-top: 10px;
+        }
+
+        .candidate-buttons button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .candidate-buttons button:hover {
+            background-color: #bb86fc;
+        }
+
+        @media (max-width: 768px) {
+            .candidate-card {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .candidate-card img {
+                margin-bottom: 10px;
+            }
+
+            .candidate-buttons button {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Cast Your Vote: Make Your Voice Heard!</h1>
+    <div class="container" id="candidate-container">
+        <!-- Candidate Cards will be added dynamically here -->
+    </div>
+
+    <script>
+        const container = document.getElementById("candidate-container");
+    
+        // Function to fetch candidates based on roomId stored in the user's token
+        const fetchCandidates = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/user/room/candidates", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}` // Pass token in Authorization header
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to fetch candidates. Please try again.");
+                }
+    
+                const data = await response.json();
+                return data.candidates; // Return the list of candidates
+            } catch (error) {
+                console.error("Error fetching candidates:", error);
+                alert("An error occurred while fetching candidates. Please try again later.");
+                return [];
+            }
+        };
+    
+        // Function to cast a vote
+        const castVote = async (candidateId, voteButton) => {
+            try {
+                const response = await fetch("http://localhost:3000/user/room/vote", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}` // Pass token in Authorization header
+                    },
+                    body: JSON.stringify({ candidateId }), // Pass the candidateId in the request body
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Failed to cast vote.");
+                }
+    
+                const data = await response.json();
+                alert(data.message); // Success message
+    
+                // Disable all vote buttons after a successful vote
+                const voteButtons = document.querySelectorAll(".vote-button");
+                voteButtons.forEach(button => button.disabled = true);
+    
+                // Optionally, update the UI to indicate the vote was successful
+                voteButton.textContent = "Voted";
+            } catch (error) {
+                console.error("Error while voting:", error);
+                alert(error.message);
+            }
+        };
+    
+        // Function to render candidate cards dynamically
+        const renderCandidates = async () => {
+            const candidates = await fetchCandidates();
+    
+            if (candidates.length === 0) {
+                container.innerHTML = "<p>No candidates found in this room.</p>";
+                return;
+            }
+    
+            container.innerHTML = ""; // Clear any existing content
+    
+            candidates.forEach(candidate => {
+                const card = document.createElement("div");
+                card.className = "candidate-card";
+    
+                card.innerHTML = `
+                    <img src="${candidate.image}" alt="${candidate.name}" />
+                    <div class="candidate-details">
+                        <h2>${candidate.name}</h2>
+                        <p>Party: ${candidate.party}</p>
+                        <div class="candidate-buttons">
+                            <button class="view-profile-button" onclick="viewProfile('${candidate._id}')">View Profile</button>
+                            <button class="vote-button" onclick="castVote('${candidate._id}', this)">Vote</button>
+                        </div>
+                    </div>
+                `;
+    
+                container.appendChild(card);
+            });
+        };
+    
+        // Placeholder function to view a candidate's profile
+        const viewProfile = (id) => {
+            alert(`Viewing profile of candidate with ID: ${id}`);
+        };
+    
+        // Render the candidates when the page loads
+        renderCandidates();
+    </script>
+       
+</body>
+</html>

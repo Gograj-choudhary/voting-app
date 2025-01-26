@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+      
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+
+        .signup {
+            padding: 50px 20px;
+            background-color: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .signup h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .signup .form-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 70%;
+        }
+
+        .signup label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            float: left;
+        }
+
+        .signup input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            color: #e0e0e0;
+        }
+        .signup select {
+            width: 100%;
+            padding: 10px ;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            color: #e0e0e0;
+        }
+
+        .signup input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+        }
+
+        .signup button {
+            background-color: #007bff;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .signup button:hover {
+            background-color: #bb86fc;
+        }
+
+        a {
+            color: #bb86fc;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .signup {
+                padding: 30px 15px;
+            }
+
+            .signup h1 {
+                font-size: 28px;
+            }
+
+            .signup input {
+                font-size: 14px;
+            }
+
+            .signup button {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="signup" id="signup">
+        <h1>Sign Up</h1>
+        <form class="form-items" id="form-items" method="post" action="http://localhost:3000/user/signup">
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your name">
+            </div>
+            <div>
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" required placeholder="Enter your age">
+            </div>
+            <div>
+                <label for="mobile">Mobile</label>
+                <input type="text" id="mobile" name="mobile" placeholder="Enter your mobile number">
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email">
+            </div>
+            <div>
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" required placeholder="Enter your address">
+            </div>
+            <div>
+                <label for="aadharCardNumber">Aadhar Card Number</label>
+                <input type="number" id="aadharCardNumber" name="aadharCardNumber" required placeholder="Enter your Aadhar number">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter a secure password">
+            </div>
+            <div>
+                <label for="role">Role</label>
+                <select id="role" name="role" required>
+                    <option value="" disabled selected>Select your role</option>
+                    <option value="admin">admin</option>
+                    <option value="voter">voter</option>
+                </select>
+            </div>
+            
+            
+            <button type="submit">Sign Up</button>
+            <p>Already have an account? <a href="./login">Log In</a></p>
+        </form>
+    </section>
+
+    <script>
+       const form = document.getElementById('form-items');
+       form.addEventListener('submit', (event) => {
+       event.preventDefault(); // Prevent default form submission
+
+    // Collect form data
+    const formData = new FormData(form);
+
+    // Convert FormData to a JSON object
+    const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
+
+    
+
+    // Send JSON data to the backend
+    fetch(form.action, {
+        method: form.method,
+        headers: {
+            'Content-Type': 'application/json', // Set content type to JSON
+        },
+        body: JSON.stringify(jsonData), // Send JSON data
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('SignUp failed. Please check your credentials.');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log('Success:', data);
+                
+            const token = data.token; // Assuming the token is in `data.token`
+            localStorage.setItem('token', token); // Save the token to localStorage
+            console.log('Token saved to localStorage:', token); 
+
+            alert('SignUp successful!');
+            
+            let role = data.response.role;
+            
+            // Redirect based on user role
+            if (role === 'admin') {
+                window.location.href = '/adminRoom.html'; // Redirect to admin page
+            } else if (role === 'voter') {
+                window.location.href = '/user.html'; // Redirect to voter page
+            } else {
+                alert('Role is not defined. Please choose the correct role.');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error submitting the form.');
+        });
+});
+
+    </script>
+    
+</body>
+</html>
+

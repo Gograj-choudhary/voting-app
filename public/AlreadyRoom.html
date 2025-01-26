@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Voting Room</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+        .add {
+            padding: 50px 20px;
+            background-color: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .add h1 {
+            font-size: 36px;
+            margin-bottom: 90px;
+        }
+        .add h2 {
+            font-size: 10px;
+            margin-top: 60px;
+        }
+        .add .form-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 70%;
+        }
+        .add label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            float: left;
+        }
+        .add input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            color: #e0e0e0;
+        }
+        .add input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+        }
+        .add button {
+            background-color: #007bff;
+            border: none;
+            padding: 15px ;
+            border-radius: 5px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .add button:hover {
+            background-color: #bb86fc;
+        }
+        .add a {
+            color: #007bff;
+
+        }
+        
+        @media (max-width: 768px) {
+            .add {
+                padding: 30px 15px;
+            }
+            .add h1 {
+                font-size: 28px;
+            }
+            .add h2 {
+                font-size: 20px;
+            }
+            .add input {
+                font-size: 14px;
+            }
+            .add button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="add" id="add">
+        <h1>Enter Your Voting Id</h1>
+        <form class="form-items" id="form-items" method="POST" action="http://localhost:3000/condidate/room">
+            <div>
+                <label for="roomId">Voting ID</label>
+                <input type="text" id="roomId" name="roomId" required placeholder="Enter Your Voting ID.">
+            </div>
+            <button type="submit">Submit</button>
+            <p>Don't have room ?<a href="adminRoom.html"> Create </a></p>
+            <!-- <h2>This Voting ID you have to share with your voters for voting</h2> -->
+        </form>
+    </section>
+
+    <script>
+        const form = document.getElementById('form-items');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            // Collect form data
+            const formData = new FormData(form);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            try {
+                // Fetch token from localStorage
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('You have to first log in to create a room.');
+                    return;
+                }
+
+                // Send request to the backend
+                const response = await fetch('http://localhost:3000/condidate/room/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Ensure JSON content type
+                        'Authorization': `Bearer ${token}`, // Add Authorization header with token
+                    },
+                    body: JSON.stringify(jsonData), // Convert data to JSON string
+                });
+
+                // Handle response
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error - Room not created');
+                }
+
+                const data = await response.json();
+                console.log('Success:', data);
+                alert('Room logged in successfully!');
+
+                // Update token in localStorage with the new token
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    console.log('Token updated successfully:', data.token);
+                }
+
+                // Redirect to the admin page
+                window.location.href = '/Admin.html';
+            } catch (error) {
+                console.error('Error:', error.message);
+                alert(`Error submitting the form: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+
+</html>

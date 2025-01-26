@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+        .add {
+            padding: 50px 20px;
+            background-color: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .add h1 {
+            font-size: 36px;
+            margin-bottom: 90px;
+        }
+        .add .form-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 70%;
+        }
+        .add label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            float: left;
+        }
+        .add input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            color: #e0e0e0;
+        }
+        .add input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+        }
+        .add button {
+            background-color: #007bff;
+            border: none;
+            padding: 15px ;
+            border-radius: 5px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .add button:hover {
+            background-color: #bb86fc;
+        }
+        
+        @media (max-width: 768px) {
+            .add {
+                padding: 30px 15px;
+            }
+            .add h1 {
+                font-size: 28px;
+            }
+            .add input {
+                font-size: 14px;
+            }
+            .add button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="add" id="add">
+        <h1> Enter Your Voting ID </h1>
+        <form class="form-items" id="form-items">
+
+           <div>
+                <label for="roomId">Voting ID</label>
+                <input type="number" id="roomId" name="roomId" required placeholder="Enter Voting ID">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <script>
+        const form = document.getElementById("form-items");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+            
+            const roomId = document.getElementById("roomId").value; // Get roomId from input
+
+            try {
+                // Send POST request to the backend API
+                const response = await fetch("http://localhost:3000/user/room/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`, // Pass the current token in headers
+                    },
+                    body: JSON.stringify({ roomId }), // Send roomId in request body
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Save the new token with roomId in localStorage
+                    localStorage.setItem("token", data.token);
+
+                    // Redirect to voting interface
+                    alert("Logged into room successfully!");
+                    window.location.href = "/UserINT.html"; // Redirect to the voting interface page
+                } else {
+                    // Show error message
+                    alert(data.message || "Failed to log into room. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error logging into room:", error);
+                alert("An error occurred. Please try again later.");
+            }
+        });
+    </script>
+</body>
+</html>

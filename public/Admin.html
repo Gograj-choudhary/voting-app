@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212; /* Dark gray for a softer dark theme */
+            color: #e0e0e0; /* Light gray for better readability */
+            font-family: Arial, sans-serif;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 100px 20px;
+        }
+
+        .main h1 {
+            padding: 40px 10px;
+            font-size: 50px;
+            text-align: center;
+            color: white; 
+        }
+
+        .option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px; 
+        }
+
+        .main button {
+            padding: 15px 40px;
+            width: 100%;
+            background-color: #007bff; 
+            font-size: 18px;
+            color: #e0e0e0; 
+            border-radius: 8px;
+            border: 1px solid #333; 
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .main button:hover {
+            background-color: #bb86fc; 
+            color: #121212; 
+            transform: scale(1.05); 
+        }
+
+        .main a {
+            text-decoration: none;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 50px 10px;
+            }
+
+            .main h1 {
+                font-size: 50px;
+                padding: 20px 5px;
+            }
+
+            .main button {
+                font-size: 16px;
+                padding: 12px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main h1 {
+                font-size: 20px;
+            }
+
+            .main button {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="main" id="main">
+        <h1>Add Candidates and Start Voting!</h1>
+        <div class="option" id="option">
+            <a href="./Add.html"><button>Add Candidates</button></a>
+            <a href="./Delete.html"><button>Delete Candidates</button></a>
+            <a href="./Update.html"><button>Update Candidates</button></a>
+            <a href="./VoteCount.html"><button>Vote Count</button></a>
+        </div>
+    </section>
+</body>
+</html>

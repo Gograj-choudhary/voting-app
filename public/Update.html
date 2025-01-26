@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Candidate</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            padding: 50px 20px;
+            background-color: #1e1e1e;
+            max-width: 600px;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 95%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: #e0e0e0;
+        }
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+        }
+        .form-actions {
+            display: flex;
+            justify-content: center; 
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px;
+            
+        }
+        button {
+            padding: 10px 20px;
+            width: 150px; 
+            margin: 0 auto; 
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #bb86fc;
+        }
+        #update-form {
+            margin-top: 60px; 
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Update Candidate</h1>
+            
+            <form id="fetch-form">
+                <div class="form-group">
+                    <label for="aadharCardNumber">Aadhar Card Number</label>
+                    <input type="text" id="aadharCardNumber" name="aadharCardNumber" required placeholder="Enter Candidate Aadhar Number">
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Find Candidate</button>
+                </div>
+            </form>
+        
+            <form id="update-form" style="display: none;">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="party">Party</label>
+                    <input type="text" id="party" name="party" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Update Candidate</button>
+                </div>
+            </form>
+        </div>
+    </body>
+    
+    <script>
+        const fetchForm = document.getElementById('fetch-form');
+        const updateForm = document.getElementById('update-form');
+        const token = localStorage.getItem('token'); // Fetch the token from localStorage
+
+        // Fetch Candidate Details
+        fetchForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const aadharCardNumber = document.getElementById('aadharCardNumber').value;
+
+            try {
+                const response = await fetch(`http://localhost:3000/condidate/room/candidate/${aadharCardNumber}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Candidate not found or an error occurred');
+                }
+
+                const candidate = await response.json();
+                document.getElementById('name').value = candidate.name;
+                document.getElementById('age').value = candidate.age;
+                document.getElementById('party').value = candidate.party;
+
+                // Show update form
+                updateForm.style.display = 'block';
+            } catch (error) {
+                alert(error.message);
+                console.error('Error fetching candidate:', error);
+            }
+        });
+
+        // Update Candidate Details
+        updateForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const aadharCardNumber = document.getElementById('aadharCardNumber').value;
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const party = document.getElementById('party').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/condidate/room/candidate', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ aadharCardNumber, name, age, party }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update candidate');
+                }
+
+                const result = await response.json();
+                alert(result.message || 'Candidate updated successfully');
+            } catch (error) {
+                alert(error.message);
+                console.error('Error updating candidate:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Candidate</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+        .delete {
+            padding: 50px 20px;
+            background-color: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .delete h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .delete .form-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 70%;
+        }
+        .delete label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            float: left;
+        }
+        .delete input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            color: #e0e0e0;
+        }
+        .delete input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+        }
+        .delete button {
+            background-color: #007bff;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .delete button:hover {
+            background-color: #bb86fc;
+        }
+    </style>
+</head>
+<body>
+    <section class="delete" id="delete">
+        <h1>Delete Candidate</h1>
+        <form class="form-items" id="form-items">
+            <div>
+                <label for="aadharCardNumber">Aadhar Card Number</label>
+                <input type="number" id="aadharCardNumber" name="aadharCardNumber" required placeholder="Enter Candidate Aadhar Number">
+            </div>
+            <button type="submit">Delete Candidate</button>
+        </form>
+    </section>
+
+    <script>
+        const form = document.getElementById('form-items');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent form from refreshing the page
+
+            const aadharCardNumber = document.getElementById('aadharCardNumber').value;
+
+            if (!aadharCardNumber) {
+                alert('Aadhar Card Number is required.');
+                return;
+            }
+
+            try {
+                // Get the token from localStorage
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('You need to log in first.');
+                    return;
+                }
+
+                // Send a request to delete the candidate by aadharCardNumber
+                const response = await fetch('http://localhost:3000/condidate/room/delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ aadharCardNumber }) // Pass the aadharCardNumber to the backend
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error - Candidate not deleted');
+                }
+
+                const data = await response.json();
+                console.log('Success:', data);
+                alert('Candidate deleted successfully!');
+                
+                // Optionally, reset the form after successful deletion
+                form.reset();
+            } catch (error) {
+                console.error('Error:', error.message);
+                alert(`Error deleting the candidate: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+</html>
