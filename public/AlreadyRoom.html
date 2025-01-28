@@ -104,12 +104,42 @@
                 <input type="text" id="roomId" name="roomId" required placeholder="Enter Your Voting ID.">
             </div>
             <button type="submit">Submit</button>
-            <p>Don't have room ?<a href="adminRoom.html"> Create </a></p>
+            <p>Don't have room ?<a href="/admin-room"> Create </a></p>
             <!-- <h2>This Voting ID you have to share with your voters for voting</h2> -->
         </form>
     </section>
 
     <script>
+        // Check for access token on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('access-token');
+
+            if (!token) {
+                alert('You must log in to access this page.');
+                window.location.href = '/login'; // Redirect to login page
+                return;
+            }
+
+            // Optional: Verify the token validity (if your backend provides an endpoint for this)
+            fetch('http://localhost:3000/auth/verify-token', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Token is invalid or expired.');
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                    window.location.href = '/login'; // Redirect to login page
+                });
+        });
+
         const form = document.getElementById('form-items');
         form.addEventListener('submit', async (event) => {
             event.preventDefault(); // Prevent default form submission behavior
@@ -123,9 +153,11 @@
 
             try {
                 // Fetch token from localStorage
-                const token = localStorage.getItem('token');
-                if (!token) {
+                const accessToken = localStorage.getItem('access-token');
+                const refreshToken = localStorage.getItem('refresh-token')
+                if (!accessToken || !refreshToken) {
                     alert('You have to first log in to create a room.');
+                    window.location.href = '/login';
                     return;
                 }
 
@@ -134,7 +166,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json', // Ensure JSON content type
-                        'Authorization': `Bearer ${token}`, // Add Authorization header with token
+                        'Authorization': `Bearer ${accessToken}`, // Add Authorization header with token
                     },
                     body: JSON.stringify(jsonData), // Convert data to JSON string
                 });
@@ -150,13 +182,14 @@
                 alert('Room logged in successfully!');
 
                 // Update token in localStorage with the new token
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-                    console.log('Token updated successfully:', data.token);
+                if (data.accessToken || data.refreshToken) {
+                    localStorage.setItem('access-token', data.accessToken);
+                    localStorage.setItem('refresh-token', data.refreshToken);
+                    console.log('access-token and refresh-token updated successfully:', data.accessToken, data.refreshToken);
                 }
 
                 // Redirect to the admin page
-                window.location.href = '/Admin.html';
+                window.location.href = '/admin';
             } catch (error) {
                 console.error('Error:', error.message);
                 alert(`Error submitting the form: ${error.message}`);

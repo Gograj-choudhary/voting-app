@@ -107,6 +107,37 @@
     </div>
 
     <script>
+        // Check for access token on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('access-token');
+
+            if (!token) {
+                alert('You must log in to access this page.');
+                window.location.href = '/login'; // Redirect to login page
+                return;
+            }
+
+            // Optional: Verify the token validity (if your backend provides an endpoint for this)
+            fetch('http://localhost:3000/auth/verify-token', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Token is invalid or expired.');
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                    window.location.href = '/login'; // Redirect to login page
+                });
+        });
+
+
         const container = document.getElementById("candidate-container");
     
         // Function to fetch candidates based on roomId stored in the user's token
@@ -116,7 +147,7 @@
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}` // Pass token in Authorization header
+                        "Authorization": `Bearer ${localStorage.getItem("access-token")}` // Pass token in Authorization header
                     },
                 });
     
@@ -140,7 +171,7 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}` // Pass token in Authorization header
+                        "Authorization": `Bearer ${localStorage.getItem("access-token")}` // Pass token in Authorization header
                     },
                     body: JSON.stringify({ candidateId }), // Pass the candidateId in the request body
                 });

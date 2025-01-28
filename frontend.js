@@ -35,6 +35,38 @@ app.get("/admin-room", async(req,res) =>{
     console.log(req.body)
     res.sendFile(getFilePath("adminRoom.html"));
 })
+app.get("/user-room", async (req, res) => {
+    console.log(req.body)
+    res.sendFile(getFilePath("user.html"));
+})
+app.get("/already-room", async (req, res) => {
+    console.log(req.body)
+    res.sendFile(getFilePath("AlreadyRoom.html"));
+})
+app.get("/admin", async (req, res) => {
+    console.log(req.body)
+    res.sendFile(getFilePath("Admin.html"));
+})
+app.get("/add-candidates", async (req, res) => {
+    console.log(req.body)
+    res.sendFile(getFilePath("Add.html"));
+})
+app.get("/delete-candidates", async (req, res) => {
+    console.log(req.body)
+    res.sendFile(getFilePath("Delete.html"))
+})
+app.get("/update-candidates", async (req, res) => {
+    console.log(req.body)
+    res.sendFile(getFilePath("Update.html"))
+})
+app.get("/vote-count",async(req, res) => {
+    console.log(req.body)
+    res.sendFile(getFilePath("VoteCount.html"))
+})
+app.get("/user-interface", async (req, res) =>{
+    console.log(req.body);
+    res.sendFile(getFilePath("UserINT.html"))
+})
 
 const PORT = 5000;
 app.listen(PORT, () => {

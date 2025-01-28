@@ -141,7 +141,7 @@
                 const refreshToken = data.refreshToken;
                 localStorage.setItem('access-token', accessToken); // Save the token to localStorage
                 localStorage.setItem('refresh-token', refreshToken);
-                console.log('Token saved to localStorage:', accessToken); 
+                console.log('accessToken and refreshToken saved to localStorage:', accessToken, refreshToken); 
     
                 
                 let role = data.role; // Extract role from response
@@ -149,7 +149,7 @@
                 if (role === 'admin') {
                     window.location.href = '/admin-room';
                 } else if (role === 'voter') {
-                    window.location.href = '/user.html';
+                    window.location.href = '/user-room';
                 } else {
                     alert('Role is undefined. Please choose the correct role.');
                 }

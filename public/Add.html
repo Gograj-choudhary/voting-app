@@ -144,6 +144,37 @@
     </section>
 
     <script>
+        // Check for access token on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('access-token');
+
+            if (!token) {
+                alert('You must log in to access this page.');
+                window.location.href = '/login'; // Redirect to login page
+                return;
+            }
+
+            // Optional: Verify the token validity (if your backend provides an endpoint for this)
+            fetch('http://localhost:3000/auth/verify-token', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Token is invalid or expired.');
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                    window.location.href = '/login'; // Redirect to login page
+                });
+        });
+
+
         const form = document.getElementById('form-items');
         const candidateList = document.getElementById('candidate-list');
         const submitAllButton = document.getElementById('submit-all');
@@ -188,12 +219,13 @@
             }
 
             try {
-                const token = localStorage.getItem('token'); // Assumes token is stored in localStorage
+                const accessToken = localStorage.getItem('access-token'); // Assumes token is stored in localStorage
+                const refreshToken = localStorage.getItem('refresh-token')
                 const response = await fetch('http://localhost:3000/condidate/room/candidate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${accessToken}`
                     },
                     body: JSON.stringify(candidates)
                 });

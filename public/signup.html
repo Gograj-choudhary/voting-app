@@ -196,9 +196,12 @@
         .then((data) => {
             console.log('Success:', data);
                 
-            const token = data.token; // Assuming the token is in `data.token`
-            localStorage.setItem('token', token); // Save the token to localStorage
-            console.log('Token saved to localStorage:', token); 
+            const accessToken = data.accessToken; // Assuming the token is in `data.token`
+            localStorage.setItem('accessToken', accessToken); // Save the token to localStorage
+            const refreshToken = data.refreshToken;
+            localStorage.setItem('refreshToken', refreshToken);
+            console.log('accessToken and refreshToken saved to localStorage:', accessToken, refreshToken);
+             
 
             alert('SignUp successful!');
             
@@ -206,9 +209,9 @@
             
             // Redirect based on user role
             if (role === 'admin') {
-                window.location.href = '/adminRoom.html'; // Redirect to admin page
+                window.location.href = '/admin-room'; // Redirect to admin page
             } else if (role === 'voter') {
-                window.location.href = '/user.html'; // Redirect to voter page
+                window.location.href = '/user-room'; // Redirect to voter page
             } else {
                 alert('Role is not defined. Please choose the correct role.');
             }

@@ -98,6 +98,37 @@
     </section>
 
     <script>
+        // Check for access token on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('access-token');
+
+            if (!token) {
+                alert('You must log in to access this page.');
+                window.location.href = '/login'; // Redirect to login page
+                return;
+            }
+
+            // Optional: Verify the token validity (if your backend provides an endpoint for this)
+            fetch('http://localhost:3000/auth/verify-token', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Token is invalid or expired.');
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                    window.location.href = '/login'; // Redirect to login page
+                });
+        });
+
+        
         const form = document.getElementById("form-items");
 
         form.addEventListener("submit", async (event) => {
@@ -111,7 +142,7 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`, // Pass the current token in headers
+                        "Authorization": `Bearer ${localStorage.getItem("access-token")}`, // Pass the current token in headers
                     },
                     body: JSON.stringify({ roomId }), // Send roomId in request body
                 });
@@ -120,11 +151,12 @@
 
                 if (response.ok) {
                     // Save the new token with roomId in localStorage
-                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("access-token", data.accessToken);
+                    localStorage.setItem("refresh-token",data.refreshToken);
 
                     // Redirect to voting interface
                     alert("Logged into room successfully!");
-                    window.location.href = "/UserINT.html"; // Redirect to the voting interface page
+                    window.location.href = "/user-interface"; // Redirect to the voting interface page
                 } else {
                     // Show error message
                     alert(data.message || "Failed to log into room. Please try again.");

@@ -124,6 +124,37 @@
     </section>
 
     <script>
+                // Check for access token on page load
+                document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('access-token');
+
+            if (!token) {
+                alert('You must log in to access this page.');
+                window.location.href = '/login'; // Redirect to login page
+                return;
+            }
+
+            // Optional: Verify the token validity (if your backend provides an endpoint for this)
+            fetch('http://localhost:3000/auth/verify-token', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Token is invalid or expired.');
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                    window.location.href = '/login'; // Redirect to login page
+                });
+        });
+
+
         const candidateTableBody = document.getElementById('candidate-data');
         const releaseResultsButton = document.getElementById('release-results');
     
@@ -134,7 +165,7 @@
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include JWT token
+                        Authorization: `Bearer ${localStorage.getItem('access-token')}`, // Include JWT token
                     },
                 });
     
@@ -168,7 +199,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include JWT token
+                        Authorization: `Bearer ${localStorage.getItem('access-token')}`, // Include JWT token
                     },
                 });
     

@@ -105,9 +105,41 @@
     </body>
     
     <script>
+
+            // Check for access token on page load
+            document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('access-token');
+
+            if (!token) {
+                alert('You must log in to access this page.');
+                window.location.href = '/login'; // Redirect to login page
+                return;
+            }
+
+            // Optional: Verify the token validity (if your backend provides an endpoint for this)
+            fetch('http://localhost:3000/auth/verify-token', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Token is invalid or expired.');
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                    window.location.href = '/login'; // Redirect to login page
+                });
+        });
+
         const fetchForm = document.getElementById('fetch-form');
         const updateForm = document.getElementById('update-form');
-        const token = localStorage.getItem('token'); // Fetch the token from localStorage
+        const accessToken = localStorage.getItem('access-token'); // Fetch the token from localStorage
+        const refreshToken = localStorage.getItem('refresh-token');
 
         // Fetch Candidate Details
         fetchForm.addEventListener('submit', async (event) => {
@@ -118,7 +150,7 @@
                 const response = await fetch(`http://localhost:3000/condidate/room/candidate/${aadharCardNumber}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${accessToken}`,
                     },
                 });
 
@@ -152,7 +184,7 @@
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${accessToken}`,
                     },
                     body: JSON.stringify({ aadharCardNumber, name, age, party }),
                 });

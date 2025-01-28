@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Candidate = require('../models/condidate'); // Ensure correct path to the model
-const { jwtAuthMiddleware, generateToken } = require('../jwt');
+const { jwtAuthMiddleware, generateAccessToken, generateRefreshToken } = require('./../jwt');
 const User = require('../models/user'); // Ensure correct path to the User model
 const Room = require('../models/room');
 const { json } = require('body-parser');
@@ -40,12 +40,14 @@ router.post('/room', jwtAuthMiddleware, async (req, res) => {
         const savedRoom = await newRoom.save();
 
         // Generate a new token with roomId included
-        const token = generateToken({ id: adminId, role: req.user.role, roomId });
+        const accessToken = generateAccessToken({ id: adminId, role: req.user.role, roomId });
+        const refreshToken = generateRefreshToken({ id: adminId, role: req.user.role, roomId });
 
         res.status(201).json({
             message: 'Room created successfully.',
             room: savedRoom,
-            token, // Return the updated token to the client
+            accessToken, // Return the updated token to the client
+            refreshToken,
         });
     } catch (err) {
         console.error('Error creating room:', err.message);
@@ -71,11 +73,13 @@ router.post('/room/login', jwtAuthMiddleware, async (req, res) => {
         const user = req.user; // User data from JWT middleware
 
         // Generate a new token with roomId included
-        const token = generateToken({ id: user.id, role: user.role, roomId });
+        const accessToken = generateAccessToken({ id: user.id, role: user.role, roomId });
+        const refreshToken = generateRefreshToken({ id: user.id, role: user.role, roomId });
 
         res.status(200).json({
             message: 'Logged into room successfully.',
-            token,
+            accessToken,
+            refreshToken,
         });
     } catch (err) {
         console.error('Error logging into room:', err.message);
@@ -233,47 +237,6 @@ router.put('/room/candidate', jwtAuthMiddleware, async (req, res) => {
     }
 });
 
-
-// Lets start voting
-router.post('/vote/:candidateID', jwtAuthMiddleware, async (req, res) =>{
-    // no admin can vote
-    // user can vote once
-
-    candidateID = req.params.candidateID;
-    userID = req.user.id;
-
-    try{
-        // Find the condidate document with the specified condidateID
-        const candidate = await Candidate.findById(candidateID);
-        if(!candidate){
-            res.status(404).json({message:'Candidate not found'});
-        }
-        if(!user){
-            res.status(404).json({message:'User not found'});
-        }
-        if(!user.isVoted){
-            res.status(400).json({message:'User already voted'});
-        }
-        if(user.role=='admin'){
-            res.status(403).json({message:'User should not Admin'});
-        }
-
-        //update the condidate document to record the vote
-        candidate.votes.push({user: userId})
-        candidate.voteCount++;
-        await candidate.save();
-
-        //update the user document
-        user.isVoted = true
-        await user.save();
-
-        res.status(200).json({message:'Vote recorded successfully'});
-    }catch(err){
-        console.error('Error voting candidate:', err);
-        res.status(500).json({ error: 'Internal server error' });
-
-    }
-})
 
 // vote count
 router.get('/room/votes', jwtAuthMiddleware, async (req, res) => {
