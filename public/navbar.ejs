@@ -1,0 +1,76 @@
+<!-- Navbar section -->
+<section class="nav" id="nav">
+    <div><span>Voting</span></div>
+    <div class="links">
+        <div class="link"><a href="/" id="home-link">Home</a></div>
+        <div class="link"><a href="/about" id="about-link">About</a></div>
+        
+        <!-- Contact Dropdown -->
+        <div class="link contact-container">
+            <a href="#" id="contact-link">Contact</a>
+            <div class="dropdown">
+                <a href="https://twitter.com/" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+                <a href="https://linkedin.com/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+                <a href="mailto:someone@example.com"><i class="fas fa-envelope"></i> Gmail</a>
+            </div>
+        </div>
+
+        <div class="link"><a href="/profile" id="profile-link">Profile</a></div>
+    </div>
+</section>
+
+<style>
+    .nav {
+        background-color: #1f1f1f;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+    .nav span {
+        font-size: 35px;
+        font-weight: bold;
+        color: white;
+    }
+    .links {
+        display: flex;
+        gap: 15px;
+    }
+    .link {
+        position: relative;
+    }
+    .link a {
+        color: #76c7f2;
+        text-decoration: none;
+        padding: 10px;
+        transition: color 0.3s ease;
+    }
+    .link a:hover {
+        color: #bb86fc;
+    }
+
+    /* Dropdown for Contact */
+    .contact-container .dropdown {
+        display: none;
+        position: absolute;
+        background-color: #1e1e1e;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        top: 40px;
+        left: 0;
+    }
+    .contact-container:hover .dropdown {
+        display: block;
+    }
+    .dropdown a {
+        display: block;
+        color: #76c7f2;
+        padding: 5px 0;
+    }
+    .dropdown a:hover {
+        color: #bb86fc;
+    }
+</style>

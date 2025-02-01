@@ -13,9 +13,9 @@ const condidateSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    aadharCardNumber:{
-        type: Number,
-        required: true
+    aadharCardNumber: {
+        type: String,  
+        required: true,
     },
     adminId:{
         type:String,

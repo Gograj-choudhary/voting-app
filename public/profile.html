@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding-top: 20px;
+        }
+        .profile-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+        .profile-photo {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .profile-photo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #007bff;
+        }
+        .profile-details {
+            flex: 2;
+        }
+        .profile-details h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info div {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .profile-info div span {
+            font-weight: bold;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #9a67ea;
+        }
+        @media (max-width: 600px) {
+            .profile-container {
+                flex-direction: column;
+                align-items: center;
+                padding: 15px;
+            }
+            .profile-photo {
+                margin-bottom: 20px;
+            }
+            .profile-details h1 {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-photo">
+            <img src="https://via.placeholder.com/120" alt="Profile Photo" id="user-photo">
+        </div>
+        <div class="profile-details">
+            <h1 id="user-name">Loading...</h1>
+            <div class="profile-info">
+                <div>
+                    <span>Age:</span>
+                    <span id="user-age">Loading...</span>
+                </div>
+                <div>
+                    <span>Mobile:</span>
+                    <span id="user-mobile">Loading...</span>
+                </div>
+                <div>
+                    <span>Email:</span>
+                    <span id="user-email">Loading...</span>
+                </div>
+                <div>
+                    <span>Aadhar Card Number:</span>
+                    <span id="user-aadhar">Loading...</span>
+                </div>
+                <div>
+                    <span>Address:</span>
+                    <span id="user-address">Loading...</span>
+                </div>
+                <div>
+                    <span>Role:</span>
+                    <span id="user-role">Loading...</span>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn" id="update-btn">Update</button>
+                <button class="btn" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const accessToken = localStorage.getItem('access-token');
+            const refreshToken = localStorage.getItem('refresh-token');
+
+            if (!accessToken) {
+                alert('You are not logged in. Redirecting to signup page.');
+                window.location.href = '/signup';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/user/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details. Please log in again.');
+                }
+
+                const userData = await response.json();
+                const user = userData.user; // Extract user object
+
+                // Populate user data
+                document.getElementById('user-name').textContent = user.name || 'N/A';
+                document.getElementById('user-age').textContent = user.age || 'N/A';
+                document.getElementById('user-mobile').textContent = user.mobile || 'N/A';
+                document.getElementById('user-email').textContent = user.email || 'N/A';
+                document.getElementById('user-aadhar').textContent = user.aadharCardNumber || 'N/A';
+                document.getElementById('user-address').textContent = user.address || 'N/A';
+                document.getElementById('user-role').textContent = user.role || 'N/A';
+                document.getElementById('user-photo').src = user.profilePhoto || 'https://via.placeholder.com/120';
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+                window.location.href = '/signup';
+            }
+
+            // Logout function
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.removeItem('access-token');
+                alert('You have been logged out successfully.');
+                window.location.href = '/signup';
+            });
+
+            // Update button event
+            document.getElementById('update-btn').addEventListener('click', () => {
+                window.location.href = '/update-profile'; // Redirect to update profile page
+            });
+        });
+    </script>
+</body>
+</html>

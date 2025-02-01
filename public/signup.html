@@ -197,9 +197,9 @@
             console.log('Success:', data);
                 
             const accessToken = data.accessToken; // Assuming the token is in `data.token`
-            localStorage.setItem('accessToken', accessToken); // Save the token to localStorage
+            localStorage.setItem('access-token', accessToken); // Save the token to localStorage
             const refreshToken = data.refreshToken;
-            localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('refresh-token', refreshToken);
             console.log('accessToken and refreshToken saved to localStorage:', accessToken, refreshToken);
              
 

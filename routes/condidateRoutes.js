@@ -28,6 +28,11 @@ router.post('/room', jwtAuthMiddleware, async (req, res) => {
 
     try {
         const adminId = req.user.id; // Admin ID from the JWT
+        
+        const existingRoom = await Room.findOne({roomId});
+        if(existingRoom){
+            return res.status(400).json({error: "Room ID already taken. Please choose another Id."})
+        }
 
         // Save room to the database
         const newRoom = new Room({
@@ -72,6 +77,11 @@ router.post('/room/login', jwtAuthMiddleware, async (req, res) => {
 
         const user = req.user; // User data from JWT middleware
 
+        // Ensure only the admin who created the room can log in
+        if (user.role !== 'admin' || user.id !== room.adminId.toString()) {
+            return res.status(403).json({ error: 'You are not authorized to log in to this room.' });
+        }
+
         // Generate a new token with roomId included
         const accessToken = generateAccessToken({ id: user.id, role: user.role, roomId });
         const refreshToken = generateRefreshToken({ id: user.id, role: user.role, roomId });
@@ -95,6 +105,7 @@ router.post('/room/candidate', jwtAuthMiddleware, async (req, res) => {
     if (!Array.isArray(candidates) || candidates.length === 0) {
         return res.status(400).json({ error: 'Candidates array is required and cannot be empty.' });
     }
+    
 
     try {
         const adminId = req.user.id; // Extract adminId from the token
@@ -254,29 +265,38 @@ router.get('/room/votes', jwtAuthMiddleware, async (req, res) => {
     }
 });
 
-// Voting result releasing 
+// Admin releases the voting results
 router.post('/room/release-results', jwtAuthMiddleware, async (req, res) => {
-    const roomId = req.user.roomId; // Extract roomId from the token
-
     try {
-        // Find the room and set voting as completed
-        const room = await Room.findByIdAndUpdate(
-            roomId,
-            { votingReleased: true },
-            { new: true }
-        );
+        const adminId = req.user.id; // Extracting logged-in admin's ID
+        const roomId = req.user.roomId; // Extracting roomId from token
 
+        // Check if room exists
+        const room = await Room.findOne({ roomId });
         if (!room) {
             return res.status(404).json({ error: 'Room not found.' });
         }
 
-        res.status(200).json({ message: 'Voting results released successfully.', room });
+        // Ensure only the admin who created the room can release results
+        if (room.adminId.toString() !== adminId) {
+            return res.status(403).json({ error: "You are not authorized to release the results for this room." });
+        }
+
+        // Check if results are already released
+        if (room.resultReleased) {
+            return res.status(400).json({ error: "Results have already been released." });
+        }
+
+        // Update room schema to indicate results are released
+        room.resultReleased = true;
+        await room.save();
+
+        res.status(200).json({ message: "Voting results have been released successfully!" });
     } catch (error) {
-        console.error('Error releasing voting results:', error.message);
+        console.error('Error releasing results:', error.message);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
-
 
 // Export the router
 module.exports = router;

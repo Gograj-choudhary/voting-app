@@ -8,6 +8,9 @@ const getFilePath = (relativeFilePath) => {
     return path.join(__dirname, 'public', relativeFilePath);
 }
 
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+
 // Proxy configuration
 app.use('/api', createProxyMiddleware({
     target: 'http://localhost:3000/api', // Replace with the actual server URL
@@ -21,6 +24,15 @@ app.use('/api', createProxyMiddleware({
 // Serve static files if needed
 app.get("/", async(req,res) =>{
     res.sendFile(getFilePath("index.html"))
+})
+app.get("/profile", async(req, res) => {
+    res.sendFile(getFilePath("profile.html"))
+})
+app.get("/privacy-policy", async (req, res) =>{
+    res.sendFile(getFilePath('privacy-policy.html'));
+})
+app.get("/about", async(req,res) => {
+    res.sendFile(getFilePath('about.html'));
 })
 
 app.get("/login", async (req, res) =>{
@@ -63,10 +75,19 @@ app.get("/vote-count",async(req, res) => {
     console.log(req.body)
     res.sendFile(getFilePath("VoteCount.html"))
 })
-app.get("/user-interface", async (req, res) =>{
-    console.log(req.body);
-    res.sendFile(getFilePath("UserINT.html"))
+app.get('/user-options', async(req, res) =>{
+    console.log(req.body)
+    res.sendFile(getFilePath("userOption.html"));
 })
+app.get("/cast-vote", async (req, res) =>{
+    console.log(req.body);
+    res.sendFile(getFilePath("CastVote.html"))
+})
+app.get("/voting-result", async (req, res) =>{
+    console.log(req.body);
+    res.sendFile(getFilePath("Result.html"))
+})
+
 
 const PORT = 5000;
 app.listen(PORT, () => {

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voting App</title>
+    <title>Voting Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* General styles */
         body {
@@ -11,6 +12,9 @@
             font-family: Arial, sans-serif;
             background-color: #121212;
             color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the body takes at least the full viewport height */
         }
 
         /* Navbar styles */
@@ -25,9 +29,14 @@
         .nav span {
             font-size: 35px;
             font-weight: bold;
+            color: #ffffff;
         }
         .nav .links {
             display: flex;
+            align-items: center;
+        }
+        .nav .links .link {
+            position: relative;
         }
         .nav .links a {
             color: #76c7f2;
@@ -40,10 +49,63 @@
             color: #bb86fc;
         }
 
+        /* Hamburger menu styles */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .hamburger .line {
+            width: 25px;
+            height: 3px;
+            background-color: #ffffff;
+            margin: 4px 0;
+        }
+
+        /* Dropdown styles */
+        .contact-container {
+            position: relative;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #1f1f1f;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            width: 180px;
+            padding: 5px 0;
+            border-radius: 5px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            visibility: hidden;
+            z-index: 10;
+        }
+        .dropdown a {
+            color: #ffffff;
+            padding: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s ease;
+        }
+        .dropdown a:hover {
+            background-color: #007bff;
+        }
+        .contact-container:hover .dropdown {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
         /* Main Section styles */
         .main {
             text-align: center;
             padding: 230px 20px;
+            flex: 1; 
         }
         .main span {
             font-size: 50px;
@@ -76,6 +138,7 @@
             padding: 20px;
             text-align: center;
             border-top: 1px solid #333;
+            margin-top: auto; /* Push footer to the bottom */
         }
         footer p {
             margin: 5px 0;
@@ -89,16 +152,97 @@
         footer a:hover {
             color: #bb86fc;
         }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            /* Navbar adjustments */
+            .nav .links {
+                display: none; /* Hide links on mobile */
+                flex-direction: column;
+                width: 100%;
+                background-color: #1f1f1f;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                padding: 10px 0;
+            }
+            .nav .links.active {
+                display: flex; /* Show links when hamburger is clicked */
+            }
+            .nav .links a {
+                margin: 5px 0;
+                padding: 10px;
+            }
+
+            /* Hamburger menu */
+            .hamburger {
+                display: flex; /* Show hamburger on mobile */
+            }
+
+            /* Main section adjustments */
+            .main {
+                padding: 100px 20px;
+            }
+            .main span {
+                font-size: 40px;
+            }
+            .main p {
+                font-size: 18px;
+            }
+
+            /* Dropdown adjustments */
+            .dropdown {
+                width: 180%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Navbar adjustments */
+            .nav span {
+                font-size: 28px;
+            }
+
+            /* Main section adjustments */
+            .main span {
+                font-size: 30px;
+            }
+            .main p {
+                font-size: 16px;
+            }
+            .main button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Navbar section -->
     <section class="nav" id="nav">
         <div><span>Voting</span></div>
-        <div class="links">
-            <div class="link"><a href="#">About</a></div>
-            <div class="link"><a href="#">Contact</a></div>
-            <div class="link"><a href="#">Profile</a></div>
+        <div class="hamburger" id="hamburger">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+        <div class="links" id="links">
+            <div class="link"><a href="/" id="home-link">Home</a></div>
+            <div class="link"><a href="/about" id="about-link">About</a></div>
+            
+            <!-- Contact Dropdown -->
+            <div class="link"> 
+                <div class="contact-container">
+                    <a href="#" id="contact-link">Contact</a>
+                    <div class="dropdown">
+                        <a href="https://twitter.com/" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+                        <a href="https://linkedin.com/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                        <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+                        <a href="mailto:someone@example.com"><i class="fas fa-envelope"></i> Gmail</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="link"><a href="/profile" id="profile-link">Profile</a></div>
         </div>
     </section>
 
@@ -107,7 +251,7 @@
         <div class="content" id="content">
             <span>Hey, welcome to Voting Hub!</span>
             <p>Cast your vote, make your voice heard, and shape the future!</p>
-            <a href="./signup"><button>Let's Start</button></a>
+            <button id="start-button">Let's Start</button>
         </div>
     </section>
 
@@ -115,18 +259,70 @@
     <footer>
         <p>&copy; 2024 Voting Hub. All rights reserved.</p>
         <p>
-            <a href="/privacy-policy.html">Privacy Policy</a> | 
+            <a href="/privacy-policy">Privacy Policy</a> | 
             <a href="/terms-of-service">Terms of Service</a> | 
-            <a href="/contact-us">Contact Us</a>
+            <!-- <a href="/contact-us">Contact Us</a> -->
         </p>
     </footer>
+
+    <script>
+        // Toggle hamburger menu
+        const hamburger = document.getElementById('hamburger');
+        const links = document.getElementById('links');
+
+        hamburger.addEventListener('click', () => {
+            links.classList.toggle('active');
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to decode JWT and extract the payload
+            const decodeToken = (accessToken) => {
+                try {
+                    const payload = JSON.parse(atob(accessToken.split('.')[1])); // Decode the payload from the token
+                    return payload;
+                } catch (error) {
+                    console.error("Failed to decode token:", error);
+                    return null;
+                }
+            };
+
+            // Function to handle redirects
+            const handleRedirect = (redirectPath) => {
+                const accessToken = localStorage.getItem('access-token');
+                const refreshToken = localStorage.getItem('refresh-token');
+
+                if (accessToken) {
+                    // Decode the access token to extract role
+                    const decodedToken = decodeToken(accessToken);
+
+                    if (decodedToken && decodedToken.role) {
+                        const role = decodedToken.role;
+
+                        // Redirect based on user role
+                        if (role === 'admin') {
+                            window.location.href = '/admin-room'; // Redirect to admin page
+                        } else if (role === 'voter') {
+                            window.location.href = '/user-room'; // Redirect to voter page
+                        } else {
+                            alert('Role is not defined. Please contact support.');
+                        }
+                    } else {
+                        console.error("Role not found in the token.");
+                        alert('Invalid token. Please log in again.');
+                        window.location.href = '/signup'; // Redirect to signup if role is missing
+                    }
+                } else {
+                    // If tokens don't exist, redirect to signup
+                    window.location.href = '/signup';
+                }
+            };
+
+            // Add event listeners for buttons and links
+            document.getElementById('start-button').addEventListener('click', () => handleRedirect('/dashboard'));
+            // document.getElementById('profile-link').addEventListener('click', () => handleRedirect('/profile'));
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-

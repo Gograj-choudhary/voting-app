@@ -172,35 +172,28 @@ router.get('/profile', jwtAuthMiddleware, async (req, res) => {
     }
 });
 
-// User password update
-router.put('/profile/password', jwtAuthMiddleware, async (req, res) => {
+// Route to check if result is released
+router.get('/room/result-status', jwtAuthMiddleware, async (req, res) => {
     try {
-        const userId = req.user.id; // Extract the id from token payload
-        const { currentPassword, newPassword } = req.body;
+        const { roomId } = req.user; // Extract roomId from token
 
-        // Validate inputs
-        if (!currentPassword || !newPassword) {
-            return res.status(400).json({ error: 'Current and new passwords are required.' });
+        if (!roomId) {
+            return res.status(400).json({ error: "Room ID is missing in token." });
         }
 
-        // Find the user by userId
-        const user = await User.findById(userId);
+        const room = await Room.findOne({ roomId });
 
-        if (!user || !(await user.comparePassword(currentPassword))) {
-            return res.status(401).json({ error: 'Invalid current password.' });
+        if (!room) {
+            return res.status(404).json({ error: "Room not found." });
         }
 
-        // Update the user's password
-        user.password = newPassword;
-        await user.save();
-
-        console.log('Password updated successfully for user:', user.id);
-        res.status(200).json({ message: 'Password updated successfully.' });
-    } catch (err) {
-        console.error('Error updating password:', err.message);
-        res.status(500).json({ error: 'Internal server error.' });
+        res.status(200).json({ resultReleased: room.resultReleased });
+    } catch (error) {
+        console.error("Error checking result status:", error.message);
+        res.status(500).json({ error: "Internal server error." });
     }
 });
+
 
 // Export the router
 module.exports = router;

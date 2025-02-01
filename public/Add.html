@@ -4,103 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Candidates</title>
-    <style>
-        body {
-            margin: 0;
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: Arial, sans-serif;
+<style>
+    body {
+        margin: 0;
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: Arial, sans-serif;
+    }
+    
+    /* Form Section */
+    .add {
+        padding: 40px 20px;
+        background-color: #1e1e1e;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        max-width: 600px;
+        width: 90%;
+        margin: 50px auto;
+    }
+    
+    .add h1 {
+        font-size: 30px;
+        margin-bottom: 15px;
+    }
+    
+    .add .form-items {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 80%;
+    }
+    
+    .add label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 14px;
+        display: block;
+        text-align: left;
+    }
+    
+    .add input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background-color: #222;
+        color: #e0e0e0;
+    }
+    
+    .add input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+    }
+    
+    .add button {
+        background-color: #007bff;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+    
+    .add button:hover {
+        background-color: #bb86fc;
+    }
+
+    /* List Section */
+    .list {
+        background-color: #1e1e1e;
+        color: white;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 50px auto;
+        max-width: 90%;
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .list h2 {
+        font-size: 28px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .list table {
+        width: 100%;
+        max-width: 800px;
+        margin-top: 20px;
+        border-collapse: collapse;
+        overflow-x: auto;
+        display: block;
+    }
+    
+    .list th, .list td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    
+    .list button {
+        background-color: #007bff;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        max-width: 200px;
+        margin-top: 15px;
+    }
+    
+    .list button:hover {
+        background-color: #bb86fc;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .add, .list {
+            width: 95%;
+            padding: 30px 15px;
         }
-        .add {
-            padding: 50px 20px;
-            background-color: #1e1e1e;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            max-width: 600px;
-            margin: 50px auto;
+    
+        .add h1, .list h2 {
+            font-size: 24px;
         }
-        .add h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
+    
         .add .form-items {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 70%;
-        }
-        .add label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 14px;
-            float: left;
-        }
-        .add input {
             width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #444;
-            border-radius: 5px;
-            background-color: #222;
-            color: #e0e0e0;
         }
-        .add input:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
-        }
-        .add button {
-            background-color: #007bff;
-            border: none;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 18px;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .add button:hover {
-            background-color: #bb86fc;
-        }
-        .list {
-            background-color: #444;
-            color: white;
-            padding: 50px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .list h2 {
-            align-items: center;
-            font-size: 30px;
-        }
+    
         .list table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        .list th, .list td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        .list button {
-            background-color: #007bff;
-            padding: 10px 60px;
-            border: none;
-            border-radius: 6px;
-            color: white;
             font-size: 14px;
-            margin-top: 10px;
+            display: block;
+            overflow-x: auto;
         }
-        .list button:hover {
-            background-color: #bb86fc;
+    
+        .list th, .list td {
+            padding: 8px;
         }
-    </style>
+    }
+
+    @media (max-width: 480px) {
+        .add h1, .list h2 {
+            font-size: 22px;
+        }
+    
+        .add input {
+            font-size: 14px;
+            padding: 8px;
+        }
+    
+        .add button, .list button {
+            font-size: 14px;
+            padding: 10px;
+        }
+    
+        .list th, .list td {
+            font-size: 12px;
+            padding: 6px;
+        }
+    }
+</style>
+
 </head>
 <body>
     <section class="add" id="add">

@@ -18,6 +18,10 @@ const roomSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    resultReleased: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 
