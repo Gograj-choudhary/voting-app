@@ -164,6 +164,37 @@
     </section>
 
     <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const accessToken = localStorage.getItem('access-token');
+            const refreshToken = localStorage.getItem('refresh-token');
+
+            if (!!accessToken) {
+                // Optional: Verify the token validity (if your backend provides an endpoint for this)
+                fetch('http://localhost:3000/auth/verify-token', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accesstoken}`,
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then((response) => {
+                    if (!response.ok) {
+                        localStorage.removeItem('access-token')
+                        localStorage.removeItem('refresh-token')   
+                    }
+                    else{
+                        window.location.href = '/';
+                    }
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                    window.location.href = '/login'; // Redirect to login page
+                });
+            }
+        });
+    </script>
+
+    <script>
        const form = document.getElementById('form-items');
        form.addEventListener('submit', (event) => {
        event.preventDefault(); // Prevent default form submission
