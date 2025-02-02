@@ -106,6 +106,17 @@
     </section>
 
     <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+    const accessToken = localStorage.getItem("access-token");
+    
+    if (accessToken) {
+        // User is already logged in, redirect to the main page
+        window.location.href = "/"; // Redirect to main page
+    }
+});
+</script>
+<script>
     
         const form = document.getElementById('form-items');
         form.addEventListener('submit', async (event) => {

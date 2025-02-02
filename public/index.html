@@ -275,54 +275,78 @@
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+    
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Function to decode JWT and extract the payload
-            const decodeToken = (accessToken) => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            const accessToken = localStorage.getItem('access-token');
+    
+            // If no token is found, redirect to signup
+            if (!accessToken) {
+                document.getElementById('start-button').addEventListener('click', () => {
+                    alert('You are not logged in. Redirecting to signup page.');
+                    window.location.href = '/signup';
+                });
+                return;
+            }
+    
+            // Function to decode JWT and extract payload
+            const decodeToken = (token) => {
                 try {
-                    const payload = JSON.parse(atob(accessToken.split('.')[1])); // Decode the payload from the token
-                    return payload;
+                    const base64Url = token.split('.')[1];
+                    return JSON.parse(atob(base64Url)); // Decode JWT payload
                 } catch (error) {
                     console.error("Failed to decode token:", error);
                     return null;
                 }
             };
-
-            // Function to handle redirects
-            const handleRedirect = (redirectPath) => {
-                const accessToken = localStorage.getItem('access-token');
-                const refreshToken = localStorage.getItem('refresh-token');
-
-                if (accessToken) {
-                    // Decode the access token to extract role
-                    const decodedToken = decodeToken(accessToken);
-
-                    if (decodedToken && decodedToken.role) {
-                        const role = decodedToken.role;
-
-                        // Redirect based on user role
-                        if (role === 'admin') {
-                            window.location.href = '/admin-room'; // Redirect to admin page
-                        } else if (role === 'voter') {
-                            window.location.href = '/user-room'; // Redirect to voter page
-                        } else {
-                            alert('Role is not defined. Please contact support.');
-                        }
-                    } else {
-                        console.error("Role not found in the token.");
-                        alert('Invalid token. Please log in again.');
-                        window.location.href = '/signup'; // Redirect to signup if role is missing
-                    }
-                } else {
-                    // If tokens don't exist, redirect to signup
-                    window.location.href = '/signup';
+    
+            try {
+                // Verify token validity with backend
+                const response = await fetch('http://localhost:3000/auth/verify-token', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Access token is invalid or expired.');
                 }
-            };
-
-            // Add event listeners for buttons and links
-            document.getElementById('start-button').addEventListener('click', () => handleRedirect('/dashboard'));
-            // document.getElementById('profile-link').addEventListener('click', () => handleRedirect('/profile'));
+    
+                const decodedToken = decodeToken(accessToken);
+    
+                if (!decodedToken || !decodedToken.role) {
+                    throw new Error('Invalid session. Please log in again.');
+                }
+    
+                const role = decodedToken.role;
+    
+                // Redirect on "Let's Start" click
+                document.getElementById('start-button').addEventListener('click', () => {
+                    if (role === 'admin') {
+                        window.location.href = '/admin-room';
+                    } else if (role === 'voter') {
+                        window.location.href = '/user-room';
+                    } else {
+                        alert('Unknown role. Redirecting to signup.');
+                        window.location.href = '/signup';
+                    }
+                });
+    
+            } catch (error) {
+                console.error(error.message);
+                alert(error.message);
+    
+                // Remove invalid token & redirect to login
+                localStorage.removeItem('access-token');
+                localStorage.removeItem('refresh-token');
+                window.location.href = '/login';
+            }
         });
     </script>
+    
+    
 </body>
 </html>

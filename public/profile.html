@@ -172,9 +172,13 @@
                 document.getElementById('user-aadhar').textContent = user.aadharCardNumber || 'N/A';
                 document.getElementById('user-address').textContent = user.address || 'N/A';
                 document.getElementById('user-role').textContent = user.role || 'N/A';
-                document.getElementById('user-photo').src = user.profilePhoto || 'https://via.placeholder.com/120';
+                document.getElementById('user-photo').src = user.profilePhoto || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
             } catch (error) {
                 console.error(error);
+                // Remove expired token before redirecting
+                localStorage.removeItem('access-token');
+                // localStorage.removeItem('refresh-token');
+
                 alert(error.message);
                 window.location.href = '/signup';
             }
@@ -182,8 +186,12 @@
             // Logout function
             document.getElementById('logout-btn').addEventListener('click', () => {
                 localStorage.removeItem('access-token');
+
+                // Allow navigation back to login page
+                history.replaceState(null, null, "/login");
+
                 alert('You have been logged out successfully.');
-                window.location.href = '/signup';
+                window.location.href = '/login';
             });
 
             // Update button event

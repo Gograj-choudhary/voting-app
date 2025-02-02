@@ -164,37 +164,48 @@
     </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const accessToken = localStorage.getItem('access-token');
-            const refreshToken = localStorage.getItem('refresh-token');
-
-            if (!!accessToken) {
-                // Optional: Verify the token validity (if your backend provides an endpoint for this)
-                fetch('http://localhost:3000/auth/verify-token', {
-                    method: 'POST',
+        document.addEventListener("DOMContentLoaded", async () => {
+            const accessToken = localStorage.getItem("access-token");
+        
+            if (!accessToken) {
+                // If no token, redirect to login
+                window.location.href = "/login";
+                return;
+            }
+        
+            try {
+                // Verify the token on the backend
+                const response = await fetch("http://localhost:3000/auth/verify-token", {
+                    method: "POST",
                     headers: {
-                        'Authorization': `Bearer ${accesstoken}`,
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then((response) => {
-                    if (!response.ok) {
-                        localStorage.removeItem('access-token')
-                        localStorage.removeItem('refresh-token')   
-                    }
-                    else{
-                        window.location.href = '/';
-                    }
-                })
-                .catch((error) => {
-                    alert(`Error: ${error.message}`);
-                    window.location.href = '/login'; // Redirect to login page
+                        "Authorization": `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
                 });
+        
+                if (!response.ok) {
+                    throw new Error("Access token expired");
+                }
+        
+                console.log("Token is valid. Redirecting to the main page...");
+                window.location.href = "/"; // Redirect to main page if token is valid
+        
+            } catch (error) {
+                console.error("Token expired or invalid:", error);
+        
+                // Remove expired token and redirect to login
+                localStorage.removeItem("access-token");
+                localStorage.removeItem("refresh-token");
+        
+                alert("Session expired. Please log in again.");
+                window.location.href = "/login";
             }
         });
-    </script>
+        </script>
 
-    <script>
+        
+<script>    
+
        const form = document.getElementById('form-items');
        form.addEventListener('submit', (event) => {
        event.preventDefault(); // Prevent default form submission

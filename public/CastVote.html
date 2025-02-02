@@ -232,16 +232,19 @@
                     card.className = "candidate-card";
     
                     card.innerHTML = `
-                        <img src="${candidate.image}" alt="${candidate.name}" />
+                        <img src="${candidate.image || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
+                          alt="${candidate.name}" 
+                          onerror="this.onerror=null; this.src='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';"/>
                         <div class="candidate-details">
-                            <h2>${candidate.name}</h2>
-                            <p>Party: ${candidate.party}</p>
-                            <div class="candidate-buttons">
-                                <button class="view-profile-button" data-id="${candidate._id}">View Profile</button>
-                                <button class="vote-button" data-id="${candidate._id}">Vote</button>
-                            </div>
+                          <h2>${candidate.name}</h2>
+                          <p>Party: ${candidate.party}</p>
+                         <div class="candidate-buttons">
+                           <button class="view-profile-button" data-id="${candidate._id}">View Profile</button>
+                           <button class="vote-button" data-id="${candidate._id}">Vote</button>
+                         </div>
                         </div>
                     `;
+
     
                     container.appendChild(card);
                 });

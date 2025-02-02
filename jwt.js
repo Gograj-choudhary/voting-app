@@ -55,7 +55,7 @@ const refreshTokenHandler = (req, res) => {
 // Function to verify a token (Reusable)
 const verifyAccessToken = (token) => {
     try {
-        return jwt.verify(token, process.emitnv.JWT_SECRET); // Decode and verify the token
+        return jwt.verify(token, process.env.JWT_SECRET); // Decode and verify the token
     } catch (err) {
         console.error('Token verification error:', err);
         return null; // Return null if token is invalid or expired
