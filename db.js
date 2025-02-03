@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 // MongoDB connection LOCAL URL
-const mongoURL = process.env.MONGODB_URL;
+//const mongoURL = process.env.MONGODB_URL_LOCAL;
 
 // mongoDB Atlas URL
-//const mongoURL = process.env.MONGODB_URL;
+const mongoURL = process.env.MONGODB_URL;
 
 
 // Connect to MongoDB when you  use locally

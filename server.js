@@ -11,9 +11,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // Allow localhost:5000 origin
-app.use(cors({
-    origin: 'http://localhost:5000',
-}));
+app.use(cors({   origin: 'http://localhost:5000',}));
 
 
 // Extracting port information

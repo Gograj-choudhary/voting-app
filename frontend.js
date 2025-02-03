@@ -34,6 +34,9 @@ app.get("/privacy-policy", async (req, res) =>{
 app.get("/about", async(req,res) => {
     res.sendFile(getFilePath('about.html'));
 })
+app.get("/terms-of-service", async (req, res) =>{
+    res.sendFile(getFilePath("TermsOfService.html"));
+})
 
 app.get("/login", async (req, res) =>{
     res.sendFile(getFilePath('login.html'));

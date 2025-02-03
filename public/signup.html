@@ -163,13 +163,23 @@
         </form>
     </section>
 
+    <!-- <script>
+        document.addEventListener("DOMContectLoaded", async () => {
+            const accessToken = localStorage.getItem("access-token")
+            if(accessToken){
+                console.log("Token is valid. Redirecting to the main page...");
+                window.location.href = "/"; // Redirect to main page if token is valid
+            }
+        }) -->
+    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             const accessToken = localStorage.getItem("access-token");
         
             if (!accessToken) {
-                // If no token, redirect to login
-                window.location.href = "/login";
+                // If no token, redirect to signup
+                window.location.href = "/signup";
                 return;
             }
         
@@ -246,6 +256,8 @@
              
 
             alert('SignUp successful!');
+             
+
             
             let role = data.response.role;
             
