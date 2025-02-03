@@ -142,7 +142,7 @@
 
             async function checkResultStatus() {
                 try {
-                    const response = await fetch(`http://localhost:3000/condidate/room/result-status`, {
+                    const response = await fetch(`https://voting-app-isya.onrender.com/condidate/room/result-status`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${accessToken}`,
@@ -164,7 +164,7 @@
 
             async function fetchVoteCounts() {
                 try {
-                    const response = await fetch(`http://localhost:3000/condidate/room/votes`, {
+                    const response = await fetch(`https://voting-app-isya.onrender.com/condidate/room/votes`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${accessToken}`,
@@ -195,7 +195,7 @@
 
             releaseResultsButton.addEventListener('click', async () => {
                 try {
-                    const response = await fetch(`http://localhost:3000/condidate/room/release-results`, {
+                    const response = await fetch(`https://voting-app-isya.onrender.com/condidate/room/release-results`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${accessToken}`,
