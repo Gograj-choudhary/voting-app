@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // Allow localhost:5000 origin
-app.use(cors({   origin: 'https://voting-app-1-dl8s.onrender.com',}));
+app.use(cors());
 
 
 // Extracting port information
