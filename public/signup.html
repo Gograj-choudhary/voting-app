@@ -119,7 +119,7 @@
 <body>
     <section class="signup" id="signup">
         <h1>Sign Up</h1>
-        <form class="form-items" id="form-items" method="post" action="http://localhost:3000/user/signup">
+        <form class="form-items" id="form-items" method="post" action="https://voting-app-isya.onrender.com/user/signup">
             <div>
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required placeholder="Enter your name">
@@ -185,7 +185,7 @@
         
             try {
                 // Verify the token on the backend
-                const response = await fetch("http://localhost:3000/auth/verify-token", {
+                const response = await fetch("https://voting-app-isya.onrender.com/auth/verify-token", {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${accessToken}`,
