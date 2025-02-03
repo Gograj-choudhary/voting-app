@@ -1,7 +1,6 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
-
 const app = express();
 
 const getFilePath = (relativeFilePath) => {
