@@ -117,7 +117,7 @@
             }
 
             // Optional: Verify the token validity (if your backend provides an endpoint for this)
-            fetch('http://localhost:3000/auth/verify-token', {
+            fetch('https://voting-app-isya.onrender.com/auth/verify-token', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -147,7 +147,7 @@
             const aadharCardNumber = document.getElementById('aadharCardNumber').value;
 
             try {
-                const response = await fetch(`http://localhost:3000/condidate/room/candidate/${aadharCardNumber}`, {
+                const response = await fetch(`https://voting-app-isya.onrender.com/condidate/room/candidate/${aadharCardNumber}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -180,7 +180,7 @@
             const party = document.getElementById('party').value;
 
             try {
-                const response = await fetch('http://localhost:3000/condidate/room/candidate', {
+                const response = await fetch('https://voting-app-isya.onrender.com/condidate/room/candidate', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
