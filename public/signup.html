@@ -171,112 +171,108 @@
                 window.location.href = "/"; // Redirect to main page if token is valid
             }
         }) -->
-    </script>
+<!--     </script> -->
 
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const accessToken = localStorage.getItem("access-token");
-        
-            if (!accessToken) {
-                // If no token, redirect to signup
-                window.location.href = "/signup";
-                return;
-            }
-        
-            try {
-                // Verify the token on the backend
-                const response = await fetch("https://voting-app-isya.onrender.com/auth/verify-token", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                });
-        
-                if (!response.ok) {
-                    throw new Error("Access token expired");
-                }
-        
-                console.log("Token is valid. Redirecting to the main page...");
-                window.location.href = "/"; // Redirect to main page if token is valid
-        
-            } catch (error) {
-                console.error("Token expired or invalid:", error);
-        
-                // Remove expired token and redirect to login
-                localStorage.removeItem("access-token");
-                localStorage.removeItem("refresh-token");
-        
-                alert("Session expired. Please log in again.");
-                window.location.href = "/login";
-            }
-        });
-        </script>
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const accessToken = localStorage.getItem("access-token");
 
-        
-<script>    
+        // Prevent infinite redirection on the signup page
+        if (!accessToken && window.location.pathname !== "/signup") {
+            window.location.href = "/signup";
+            return;
+        }
 
-       const form = document.getElementById('form-items');
-       form.addEventListener('submit', (event) => {
-       event.preventDefault(); // Prevent default form submission
+        if (!accessToken) return; // Stop execution if there's no token
 
-    // Collect form data
-    const formData = new FormData(form);
+        try {
+            // Verify the token on the backend
+            const response = await fetch("http://localhost:3000/auth/verify-token", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`, // Fixed backtick issue
+                    "Content-Type": "application/json",
+                },
+            });
 
-    // Convert FormData to a JSON object
-    const jsonData = {};
-    formData.forEach((value, key) => {
-        jsonData[key] = value;
-    });
-
-    
-
-    // Send JSON data to the backend
-    fetch(form.action, {
-        method: form.method,
-        headers: {
-            'Content-Type': 'application/json', // Set content type to JSON
-        },
-        body: JSON.stringify(jsonData), // Send JSON data
-    })
-        .then((response) => {
             if (!response.ok) {
-                throw new Error('SignUp failed. Please check your credentials.');
+                throw new Error("Access token expired");
             }
-            return response.json();
-        })
-        .then((data) => {
-            console.log('Success:', data);
-                
-            const accessToken = data.accessToken; // Assuming the token is in `data.token`
-            localStorage.setItem('access-token', accessToken); // Save the token to localStorage
-            const refreshToken = data.refreshToken;
-            localStorage.setItem('refresh-token', refreshToken);
-            console.log('accessToken and refreshToken saved to localStorage:', accessToken, refreshToken);
-             
 
-            alert('SignUp successful!');
-             
+            console.log("Token is valid. Redirecting to the main page...");
+            window.location.href = "/"; // Redirect to main page if token is valid
+        } catch (error) {
+            console.error("Token expired or invalid:", error);
 
-            
-            let role = data.response.role;
-            
-            // Redirect based on user role
-            if (role === 'admin') {
-                window.location.href = '/admin-room'; // Redirect to admin page
-            } else if (role === 'voter') {
-                window.location.href = '/user-room'; // Redirect to voter page
-            } else {
-                alert('Role is not defined. Please choose the correct role.');
+            // Remove expired token and redirect to login
+            localStorage.removeItem("access-token");
+            localStorage.removeItem("refresh-token");
+
+            alert("Session expired. Please log in again.");
+            window.location.href = "/login";
+        }
+    });
+</script>
+
+<script>    
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("form-items");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Collect form data
+            const formData = new FormData(form);
+
+            // Convert FormData to a JSON object
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            try {
+                // Send JSON data to the backend
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    headers: {
+                        "Content-Type": "application/json", // Set content type to JSON
+                    },
+                    body: JSON.stringify(jsonData), // Send JSON data
+                });
+
+                if (!response.ok) {
+                    throw new Error("SignUp failed. Please check your credentials.");
+                }
+
+                const data = await response.json();
+                console.log("Success:", data);
+
+                const accessToken = data.accessToken; // Assuming the token is in `data.accessToken`
+                localStorage.setItem("access-token", accessToken); // Save token to localStorage
+                const refreshToken = data.refreshToken;
+                localStorage.setItem("refresh-token", refreshToken);
+                console.log("accessToken and refreshToken saved:", accessToken, refreshToken);
+
+                alert("SignUp successful!");
+
+                let role = data.response?.role; // Use optional chaining to avoid errors
+
+                // Redirect based on user role
+                if (role === "admin") {
+                    window.location.href = "/admin-room"; // Redirect to admin page
+                } else if (role === "voter") {
+                    window.location.href = "/user-room"; // Redirect to voter page
+                } else {
+                    alert("Role is not defined. Please choose the correct role.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error submitting the form.");
             }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('Error submitting the form.');
         });
-});
+    });
+</script>
 
-    </script>
     
 </body>
 </html>
