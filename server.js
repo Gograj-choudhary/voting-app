@@ -31,10 +31,6 @@ app.use('/condidate', condidateRoutes);
 app.use('/auth', authRoutes);
 
 
-app.get("/", (req, res) => {
-  res.send("Voting App Backend is Running");
-});
-
 // Start server after MongoDB connects
 app.listen(PORT , () => {
     console.log(`Server is running on port ${PORT}`);
