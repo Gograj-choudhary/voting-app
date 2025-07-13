@@ -146,7 +146,7 @@
             }
 
             // Optional: Verify the token validity (if your backend provides an endpoint for this)
-            fetch('https://voting-app-2-5p23.onrender.com/auth/verify-token', {
+            fetch('https://voting-app-qlcf.onrender.com/auth/verify-token', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -187,7 +187,7 @@
                 }
 
                 // Send a request to delete the candidate by aadharCardNumber
-                const response = await fetch('https://voting-app-2-5p23.onrender.com/condidate/room/delete', {
+                const response = await fetch('https://voting-app-qlcf.onrender.com/condidate/room/delete', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
