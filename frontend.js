@@ -12,10 +12,10 @@ app.use(express.static('public'));
 
 // Proxy configuration
 app.use('/api', createProxyMiddleware({
-    target: 'https://voting-app-isya.onrender.com', // Replace with the actual server URL
+    target: 'https://voting-app-qlcf.onrender.com', // Replace with the actual server URL
     changeOrigin: true,
     pathRewrite: { '^/api': '' }, // Optional: rewrite the path
-    hostRewrite: 'voting-app-isya.onrender.com',
+    hostRewrite: 'voting-app-qlcf.onrender.com',
     protocolRewrite: 'https',
     logLevel: 'debug'
 }));
